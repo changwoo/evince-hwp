@@ -1,0 +1,5 @@
+[Evince Backend]
+Module=hwpdocument
+Resident=true
+TypeDescription=HWP Documents
+MimeType=application/x-hwp;application/x-ole-storage

@@ -1,6 +1,6 @@
 LIB = -L../libghwp -lghwp
 INC = -I..
-CFLAGS = -shared -fPIC `pkg-config --cflags evince-document-3.0 libgsf-1` $(INC) $(LIB)
+CFLAGS = -shared -fPIC `pkg-config --cflags evince-document-3.0 libgsf-1 gee-1.0` $(INC) $(LIB)
 
 libhwpdocument.so: hwp-document.c hwp-document.h
 	gcc $(CFLAGS) -o libhwpdocument.so hwp-document.c

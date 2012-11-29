@@ -73,7 +73,7 @@ hwp_document_load (EvDocument *document,
     return TRUE;
 }
 
-static int
+static gint
 hwp_document_get_n_pages (EvDocument  *document)
 {
     HWPDocument *hwp_document = HWP_DOCUMENT (document);
@@ -90,11 +90,10 @@ hwp_document_get_page (EvDocument *document,
 
     ghwp_page = ghwp_document_get_page (hwp_document->document, index);
     page = ev_page_new (index);
-    if (ghwp_page) {
-        page->backend_page = (EvBackendPage)g_object_ref (ghwp_page);
-        page->backend_destroy_func = (EvBackendPageDestroyFunc)g_object_unref;
-        g_object_unref (ghwp_page);
-    }
+
+    page->backend_page = (EvBackendPage)g_object_ref (ghwp_page);
+    page->backend_destroy_func = (EvBackendPageDestroyFunc)g_object_unref;
+    g_object_unref (ghwp_page);
 
     return page;
 }
@@ -114,27 +113,27 @@ hwp_document_render (EvDocument      *document,
                      EvRenderContext *rc)
 {
     GHWPPage        *ghwp_page;
-    gdouble          page_width, page_height;
+    gdouble          width_points, height_points;
     guint            width, height;
+
     cairo_surface_t *surface;
     cairo_t         *cr;
-    GError          *error = NULL;
 
     ghwp_page = GHWP_PAGE (rc->page->backend_page);
 
-    ghwp_page_get_size (ghwp_page, &page_width, &page_height);
+    ghwp_page_get_size (ghwp_page, &width_points, &height_points);
+
     if (rc->rotation == 90 || rc->rotation == 270) {
-        width = (guint) ((page_height * rc->scale) + 0.5);
-        height = (guint) ((page_width * rc->scale) + 0.5);
+        width  = (guint) ((height_points * rc->scale) + 0.5);
+        height = (guint) ((width_points  * rc->scale) + 0.5);
     } else {
-        width = (guint) ((page_width * rc->scale) + 0.5);
-        height = (guint) ((page_height * rc->scale) + 0.5);
+        width  = (guint) ((width_points  * rc->scale) + 0.5);
+        height = (guint) ((height_points * rc->scale) + 0.5);
     }
 
     surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
                                           width, height);
     cr = cairo_create (surface);
-
     cairo_set_source_rgb (cr, 1., 1., 1.);
     cairo_paint (cr);
 
@@ -154,14 +153,9 @@ hwp_document_render (EvDocument      *document,
 
     cairo_scale (cr, rc->scale, rc->scale);
     cairo_rotate (cr, rc->rotation * G_PI / 180.0);
-    ghwp_page_render (ghwp_page, cr, &error);
-    cairo_destroy (cr);
+    ghwp_page_render (ghwp_page, cr);
 
-    if (error) {
-        g_warning ("Error rendering page %d: %s\n",
-               rc->page->index, error->message);
-        g_error_free (error);
-    }
+    cairo_destroy (cr);
 
     return surface;
 }

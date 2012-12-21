@@ -21,7 +21,7 @@
 
 #include "config.h"
 
-#include <ghwp-0.1/ghwp.h>
+#include <ghwp/ghwp.h>
 
 #include "hwp-document.h"
 

@@ -1,4 +1,4 @@
-LIBS = -lghwp-0.1
+LIBS = -lghwp
 CFLAGS = -shared -fPIC `pkg-config --cflags evince-document-3.0 ghwp-0.1`
 
 libhwpdocument.so: hwp-document.c hwp-document.h

@@ -1,2 +1,2 @@
-#define GETTEXT_PACKAGE "evinec-hwp-backend"
+#define GETTEXT_PACKAGE "evince"
 #define GNOMELOCALEDIR  "/usr/share/locale"

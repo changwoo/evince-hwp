@@ -19,7 +19,7 @@
  */
 
 
-#include "config.h"
+#include <config.h>
 
 #include <libintl.h>
 #include <ghwp/ghwp.h>

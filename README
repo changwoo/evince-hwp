@@ -1,10 +1,22 @@
 evince-hwp-backend for hwp document
 evince에서 hwp 문서를 보기 위한 백엔드입니다.
 
+
+
 INSTALL
 -------
 sudo apt-get update
 sudo apt-get install libgsf-1-dev libcairo2-dev libevince-dev fonts-nanum
 
+./autogen.sh
 make
 sudo make install
+
+
+
+Making deb Package
+------------------
+cd evince-hwp
+dch -l custom
+dpkg-buildpackage -b
+ls ..

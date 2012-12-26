@@ -1,0 +1,6 @@
+evince-hwp (0.1) unstable; urgency=low
+
+  * apply BACKEND_LIBTOOL_FLAGS
+  * support dpkg-buildpackage
+
+ -- Hodong Kim <cogniti@gmail.com>  Thu, 27 Dec 2012 01:51:32 +0900

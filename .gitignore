@@ -6,20 +6,17 @@
 .deps
 .libs
 
+# anjuta
+.anjuta*
+*.anjuta
+
 # output of autotools
 INSTALL
 Makefile
 Makefile.in
 aclocal.m4
 autom4te.cache/
-config.guess
-config.guess.cdbs-orig
-config.h
-config.h.in
-config.log
-config.status
-config.sub
-config.sub.cdbs-orig
+config.*
 configure
 depcomp
 install-sh
@@ -29,15 +26,9 @@ missing
 stamp-h1
 
 # output files of dpkg-buildpackage
-debian/autoreconf.after
-debian/autoreconf.before
-debian/evince-hwp.debhelper.log
-debian/evince-hwp.substvars
+debian/autoreconf.*
+debian/*.log
+debian/*.substvars
 debian/evince-hwp/
 debian/files
-debian/stamp-autotools
-debian/stamp-autotools-files
-debian/stamp-copyright-check
-debian/stamp-makefile-build
-debian/stamp-makefile-install
-debian/stamp-upstream-cruft
+debian/stamp-*

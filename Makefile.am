@@ -4,12 +4,12 @@ SUBDIRS = src
 
 evince_hwpdocdir = ${prefix}/doc/evince-hwp
 evince_hwpdoc_DATA = \
-	README \
-	COPYING \
-	AUTHORS \
-	ChangeLog \
-	INSTALL \
-	NEWS
+    README    \
+    COPYING   \
+    AUTHORS   \
+    ChangeLog \
+    INSTALL   \
+    NEWS
 
 
 EXTRA_DIST = $(evince_hwpdoc_DATA)

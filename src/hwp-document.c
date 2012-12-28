@@ -164,7 +164,7 @@ hwp_document_render (EvDocument      *document,
 static void
 hwp_document_class_init (HWPDocumentClass *klass)
 {
-    GObjectClass    *gobject_class = G_OBJECT_CLASS (klass);
+    GObjectClass    *gobject_class     = G_OBJECT_CLASS (klass);
     EvDocumentClass *ev_document_class = EV_DOCUMENT_CLASS (klass);
     gobject_class->dispose = hwp_document_dispose;
 

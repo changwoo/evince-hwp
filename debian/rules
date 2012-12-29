@@ -3,11 +3,18 @@
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
 
-include /usr/share/cdbs/1/rules/autoreconf.mk
-include /usr/share/cdbs/1/rules/debhelper.mk
-include /usr/share/cdbs/1/class/gnome.mk
-include /usr/share/cdbs/1/rules/utils.mk
+%:
+	dh $@ --with autoreconf
 
-binary-install/evince-hwp::
-	find debian/$(cdbs_curpkg) -name \*.la -exec rm -f {} \;
-	find debian/$(cdbs_curpkg) -name \*.a  -exec rm -f {} \;
+override_dh_install:
+	dh_install
+	# *.la file is useless for a evince backend
+	find debian/$(cdbs_curpkg) -name \*.la     -exec rm -f {} \;
+	# to avoid extra-license-file
+	find debian/$(cdbs_curpkg) -name COPYING   -exec rm -f {} \;
+	# FIXME to avoid zero-byte-file-in-doc-directory
+	find debian/$(cdbs_curpkg) -name ChangeLog -exec rm -f {} \;
+	# to avoid package-contains-upstream-install-documentation
+	find debian/$(cdbs_curpkg) -name INSTALL   -exec rm -f {} \;
+	# FIXME to avoid zero-byte-file-in-doc-directory
+	find debian/$(cdbs_curpkg) -name NEWS      -exec rm -f {} \;

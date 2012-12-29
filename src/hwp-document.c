@@ -19,9 +19,9 @@
  */
 
 
-#include <config.h>
+#include "config.h"
 
-#include <libintl.h>
+#include <glib/gi18n-lib.h>
 #include <ghwp/ghwp.h>
 
 #include "hwp-document.h"

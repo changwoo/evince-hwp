@@ -7,7 +7,6 @@ libhwpdocument_la_SOURCES = \
 	hwp-document.h
 
 libhwpdocument_la_CPPFLAGS =               \
-	-DGETTEXT_PACKAGE=\"evince\"           \
 	-DGNOMELOCALEDIR=\"$(datadir)/locale\" \
 	$(AM_CPPFLAGS)
 
@@ -19,8 +18,13 @@ libhwpdocument_la_CFLAGS = \
 libhwpdocument_la_LDFLAGS = $(BACKEND_LIBTOOL_FLAGS)
 libhwpdocument_la_LIBADD = $(EVINCE_HWP_LIBS)
 
-backend_DATA = hwpdocument.evince-backend
+backend_in_files = hwpdocument.evince-backend.in
+backend_DATA = $(backend_in_files:.evince-backend.in=.evince-backend)
 
 EXTRA_DIST =        \
 	backend.symbols \
-	hwpdocument.evince-backend
+	$(backend_in_files)
+
+CLEANFILES = $(backend_DATA)
+
+@EV_INTLTOOL_EVINCE_BACKEND_RULE@

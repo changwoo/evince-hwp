@@ -5,6 +5,7 @@
 
 Source: evince-hwp
 Priority: optional
+Section: gnome
 Maintainer: Hodong Kim <cogniti@gmail.com>
 Build-Depends: cdbs (>= 0.4.93),
                debhelper (>= 9),
@@ -16,7 +17,6 @@ Build-Depends: cdbs (>= 0.4.93),
                libglib2.0-dev,
                pkg-config
 Standards-Version: 3.9.3
-Section: gnome
 Homepage: https://github.com/cogniti/evince-hwp
 Vcs-Git: git://github.com/cogniti/evince-hwp.git
 Vcs-Browser: https://github.com/cogniti/evince-hwp
@@ -25,7 +25,6 @@ Package: evince-hwp
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
 Pre-Depends: ${misc:Pre-Depends}
-Multi-Arch: same
 Description: hwp backend for evince
  This package contains the hwp backend for evince. It is being used by evince
  to read HWP v5 documents.

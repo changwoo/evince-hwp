@@ -2,7 +2,7 @@
 
 SUBDIRS = src 
 
-evince_hwpdocdir = ${prefix}/doc/evince-hwp
+evince_hwpdocdir = ${prefix}/share/doc/evince-hwp
 evince_hwpdoc_DATA = \
     README    \
     COPYING   \

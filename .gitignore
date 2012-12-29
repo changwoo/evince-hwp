@@ -20,11 +20,21 @@ config.*
 configure
 depcomp
 install-sh
+intltool-*
 libtool
 ltmain.sh
 m4/
 missing
+mkinstalldirs
 stamp-h1
+src/hwpdocument.evince-backend
+
+# i18n
+po/.intltool-merge-cache
+po/Makefile.in.in
+po/POTFILES
+po/*.gmo
+po/stamp-it
 
 # output files of dpkg-buildpackage
 debian/autoreconf.*

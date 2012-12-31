@@ -1,19 +1,23 @@
 /*
  * hwp-document.c
  *
- * Copyright (C) 2010  Carlos Garcia Campos <carlosgc@gnome.org>
- * Copyright (C) 2012  Hodong Kim <cogniti@gmail.com>
- * 
- * hwp-document.c is free software: you can redistribute it and/or modify it
+ * Copyright (C) 2012, Hodong Kim <cogniti@gmail.com>
+ * Copyright (C) 2009, Juanjo Marín <juanj.marin@juntadeandalucia.es>
+ * Copyright (C) 2004, Red Hat, Inc.
+ *
+ * hwp-document.c is based on ev-poppler.cc
+ * http://git.gnome.org/browse/evince/tree/backend/pdf/ev-poppler.cc
+ *
+ * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
- * hwp-document.c is distributed in the hope that it will be useful, but
+ *
+ * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -39,7 +43,23 @@ struct _HWPDocumentClass
     EvDocumentClass parent_class;
 };
 
-EV_BACKEND_REGISTER (HWPDocument, hwp_document);
+/* TODO selection, find, print
+static void hwp_document_print_iface_init (EvDocumentPrintInterface *iface);
+static void hwp_document_find_iface_init  (EvDocumentFindInterface  *iface);
+static void hwp_selection_iface_init      (EvSelectionInterface     *iface);
+
+EV_BACKEND_REGISTER_WITH_CODE (HWPDocument, hwp_document,
+    {
+        EV_BACKEND_IMPLEMENT_INTERFACE (EV_TYPE_DOCUMENT_PRINT,
+                                        hwp_document_print_iface_init);
+        EV_BACKEND_IMPLEMENT_INTERFACE (EV_TYPE_DOCUMENT_FIND,
+                                        hwp_document_find_iface_init);
+        EV_BACKEND_IMPLEMENT_INTERFACE (EV_TYPE_SELECTION,
+                                        hwp_selection_iface_init);
+    });
+*/
+
+EV_BACKEND_REGISTER (HWPDocument, hwp_document)
 
 static void
 hwp_document_init (HWPDocument *hwp_document)
@@ -65,7 +85,7 @@ hwp_document_load (EvDocument *document,
                    GError    **error)
 {
     HWPDocument *hwp_document = HWP_DOCUMENT (document);
-    hwp_document->document = ghwp_document_new_from_uri (uri, error);
+    hwp_document->document    = ghwp_document_new_from_uri (uri, error);
 
     if (!hwp_document->document) {
         return FALSE;
@@ -168,9 +188,141 @@ hwp_document_class_init (HWPDocumentClass *klass)
     EvDocumentClass *ev_document_class = EV_DOCUMENT_CLASS (klass);
     gobject_class->dispose = hwp_document_dispose;
 
-    ev_document_class->load = hwp_document_load;
-    ev_document_class->get_n_pages = hwp_document_get_n_pages;
-    ev_document_class->get_page = hwp_document_get_page;
+    ev_document_class->load          = hwp_document_load;
+    ev_document_class->get_n_pages   = hwp_document_get_n_pages;
+    ev_document_class->get_page      = hwp_document_get_page;
     ev_document_class->get_page_size = hwp_document_get_page_size;
-    ev_document_class->render = hwp_document_render;
+    ev_document_class->render        = hwp_document_render;
 }
+/* TODO selection, find, print
+static void
+hwp_selection_render_selection (EvSelection      *selection,
+                                EvRenderContext  *rc,
+                                cairo_surface_t **surface,
+                                EvRectangle      *points,
+                                EvRectangle      *old_points,
+                                EvSelectionStyle  style,
+                                GdkColor         *text,
+                                GdkColor         *base)
+{
+    GHWPPage *ghwp_page;
+    cairo_t  *cr;
+    GHWPColor text_color, base_color;
+    double    width_points, height_points;
+    gint      width, height;
+
+    ghwp_page = GHWP_PAGE (rc->page->backend_page);
+
+    ghwp_page_get_size (ghwp_page, &width_points, &height_points);
+    width  = (int) ((width_points  * rc->scale) + 0.5);
+    height = (int) ((height_points * rc->scale) + 0.5);
+
+    text_color.red   = text->red;
+    text_color.green = text->green;
+    text_color.blue  = text->blue;
+
+    base_color.red   = base->red;
+    base_color.green = base->green;
+    base_color.blue  = base->blue;
+
+    if (*surface == NULL) {
+        *surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
+                                               width, height);
+    }
+
+    cr = cairo_create (*surface);
+    cairo_scale (cr, rc->scale, rc->scale);
+    cairo_surface_set_device_offset (*surface, 0, 0);
+    memset (cairo_image_surface_get_data (*surface), 0x00,
+        cairo_image_surface_get_height (*surface) *
+        cairo_image_surface_get_stride (*surface));
+    ghwp_page_render_selection (ghwp_page,
+                                cr,
+                                (GHWPRectangle *) points,
+                                (GHWPRectangle *) old_points,
+                                (GHWPSelectionStyle) style,
+                                &text_color,
+                                &base_color);
+    cairo_destroy (cr);
+}
+
+static gchar *
+hwp_selection_get_selected_text (EvSelection     *selection,
+                                 EvPage          *page,
+                                 EvSelectionStyle style,
+                                 EvRectangle     *points)
+{
+    g_return_val_if_fail (GHWP_IS_PAGE (page->backend_page), NULL);
+
+    return ghwp_page_get_selected_text (GHWP_PAGE (page->backend_page),
+                                        (GHWPSelectionStyle) style,
+                                        (GHWPRectangle *) points);
+}
+
+static cairo_region_t *
+create_region_from_ghwp_region (GList *region, gdouble scale)
+{
+    GList *l;
+    cairo_region_t *retval;
+
+    retval = cairo_region_create ();
+
+    for (l = region; l; l = g_list_next (l)) {
+        GHWPRectangle        *rectangle;
+        cairo_rectangle_int_t rect;
+
+        rectangle = (GHWPRectangle *)l->data;
+
+        rect.x = (gint) ((rectangle->x1 * scale) + 0.5);
+        rect.y = (gint) ((rectangle->y1 * scale) + 0.5);
+        rect.width  = (gint) (((rectangle->x2 - rectangle->x1) * scale) + 0.5);
+        rect.height = (gint) (((rectangle->y2 - rectangle->y1) * scale) + 0.5);
+        cairo_region_union_rectangle (retval, &rect);
+
+        ghwp_rectangle_free (rectangle);
+    }
+
+    return retval;
+}
+
+static cairo_region_t *
+hwp_selection_get_selection_region (EvSelection     *selection,
+                                    EvRenderContext *rc,
+                                    EvSelectionStyle style,
+                                    EvRectangle     *points)
+{
+    GHWPPage       *ghwp_page;
+    cairo_region_t *retval;
+    GList          *region;
+
+    ghwp_page = GHWP_PAGE (rc->page->backend_page);
+    region = ghwp_page_get_selection_region (ghwp_page,
+                                             1.0,
+                                             (GHWPSelectionStyle) style,
+                                             (GHWPRectangle *) points);
+    retval = create_region_from_ghwp_region (region, rc->scale);
+    g_list_free (region);
+
+    return retval;
+}
+
+static void
+hwp_selection_iface_init (EvSelectionInterface *iface)
+{
+    iface->render_selection     = hwp_selection_render_selection;
+    iface->get_selected_text    = hwp_selection_get_selected_text;
+    iface->get_selection_region = hwp_selection_get_selection_region;
+}
+
+static void
+hwp_document_print_iface_init (EvDocumentPrintInterface *iface)
+{
+
+}
+
+static void
+hwp_document_find_iface_init  (EvDocumentFindInterface  *iface)
+{
+
+}
+*/

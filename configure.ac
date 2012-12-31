@@ -1,6 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT(evince_hwp, 0.1.1)
+AC_INIT(evince-hwp, 0.1.1, [https://github.com/cogniti/evince-hwp/issues],
+       [evince-hwp],[https://github.com/cogniti/evince-hwp])
 
 AC_CONFIG_HEADERS([config.h])
 

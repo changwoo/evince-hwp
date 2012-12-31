@@ -3,8 +3,9 @@ Upstream-Name: evince-hwp
 Source: https://github.com/cogniti/evince-hwp
 
 Files: *
-Copyright: 2010 Carlos Garcia Campos <carlosgc@gnome.org>
-           2012 Hodong Kim <cogniti@gmail.com>
+Copyright: 2012 Hodong Kim <cogniti@gmail.com>
+           2009 Juanjo Marín <juanj.marin@juntadeandalucia.es>
+           2004 Red Hat, Inc.
 License: GPL-3+
 
 Files: debian/*

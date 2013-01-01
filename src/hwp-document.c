@@ -135,8 +135,7 @@ hwp_document_render (EvDocument      *document,
 {
     GHWPPage        *ghwp_page;
     gdouble          width_points, height_points;
-    guint            width, height;
-
+    guint            width,        height;
     cairo_surface_t *surface;
     cairo_t         *cr;
 
@@ -155,8 +154,6 @@ hwp_document_render (EvDocument      *document,
     surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
                                           width, height);
     cr = cairo_create (surface);
-    cairo_set_source_rgb (cr, 1., 1., 1.);
-    cairo_paint (cr);
 
     switch (rc->rotation) {
     case 90:
@@ -172,13 +169,43 @@ hwp_document_render (EvDocument      *document,
         cairo_translate (cr, 0, 0);
     }
 
-    cairo_scale (cr, rc->scale, rc->scale);
+    cairo_scale  (cr, rc->scale, rc->scale);
     cairo_rotate (cr, rc->rotation * G_PI / 180.0);
     ghwp_page_render (ghwp_page, cr);
+
+    cairo_set_operator   (cr, CAIRO_OPERATOR_DEST_OVER);
+    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
+    cairo_paint          (cr);
 
     cairo_destroy (cr);
 
     return surface;
+}
+
+static EvDocumentInfo *
+hwp_document_get_info (EvDocument *document)
+{
+    EvDocumentInfo *info;
+    GHWPDocument   *ghwp_doc;
+
+    info = g_new0 (EvDocumentInfo, 1);
+    info->fields_mask = EV_DOCUMENT_INFO_TITLE         |
+                        EV_DOCUMENT_INFO_SUBJECT       |
+                        EV_DOCUMENT_INFO_KEYWORDS      |
+                        EV_DOCUMENT_INFO_CREATOR       |
+                        EV_DOCUMENT_INFO_CREATION_DATE |
+                        EV_DOCUMENT_INFO_MOD_DATE;
+
+    ghwp_doc = HWP_DOCUMENT (document)->document;
+
+    info->title    = ghwp_document_get_title    (ghwp_doc);
+    info->subject  = ghwp_document_get_subject  (ghwp_doc);
+    info->keywords = ghwp_document_get_keywords (ghwp_doc);
+    info->creator  = ghwp_document_get_creator  (ghwp_doc);
+    info->creation_date = ghwp_document_get_creation_date     (ghwp_doc);
+    info->modified_date = ghwp_document_get_modification_date (ghwp_doc);
+
+    return info;
 }
 
 static void
@@ -193,6 +220,8 @@ hwp_document_class_init (HWPDocumentClass *klass)
     ev_document_class->get_page      = hwp_document_get_page;
     ev_document_class->get_page_size = hwp_document_get_page_size;
     ev_document_class->render        = hwp_document_render;
+    /* hwp summary infomation */
+    ev_document_class->get_info      = hwp_document_get_info;
 }
 /* TODO selection, find, print
 static void

@@ -2,4 +2,4 @@
 Module=hwpdocument
 Resident=true
 _TypeDescription=HWP Documents
-MimeType=application/x-hwp;application/x-ole-storage
+MimeType=application/x-hwp;application/x-ole-storage;text/html

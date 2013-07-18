@@ -1,6 +1,10 @@
 evince-hwp-backend for hwp document
 evince에서 hwp 문서를 보기 위한 백엔드입니다.
 
+What is HWP?
+------------
+HWP is a proprietary document file format developed by Hancom for word
+processing documents.
 
 
 INSTALL

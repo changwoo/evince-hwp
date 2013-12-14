@@ -26,7 +26,7 @@
 #include "config.h"
 
 #include <glib/gi18n-lib.h>
-#include <ghwp/ghwp.h>
+#include <ghwp.h>
 
 #include "hwp-document.h"
 

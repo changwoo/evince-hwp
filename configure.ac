@@ -29,7 +29,18 @@ m4_pattern_allow([AM_V_GEN]) dnl Make autoconf not complain about the rule below
 EV_INTLTOOL_EVINCE_BACKEND_RULE='%.evince-backend:   %.evince-backend.in   $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*.po) ; $(AM_V_GEN) LC_ALL=C $(INTLTOOL_MERGE) -d -u -c $(top_builddir)/po/.intltool-merge-cache $(top_srcdir)/po $< [$]@'
 AC_SUBST([EV_INTLTOOL_EVINCE_BACKEND_RULE])
 
-PKG_CHECK_MODULES(EVINCE_HWP, [ghwp-0.2 evince-document-3.0])
+AC_ARG_WITH([libhwp], [  --with-libhwp=DIR       use libhwp in DIR], libhwpdir=$with_libhwp)
+if test $with_libhwp; then
+  export PKG_CONFIG_PATH=$with_libhwp/src
+  PKG_CHECK_MODULES(LIBHWP, [ghwp-0.2])
+  PKG_CHECK_MODULES(EVINCE_HWP, [evince-document-3.0])
+  EVINCE_HWP_CFLAGS="$LIBHWP_CFLAGS -I$with_libhwp/src $EVINCE_HWP_CFLAGS"
+  EVINCE_HWP_LIBS="$with_libhwp/src/libghwp.la $EVINCE_HWP_CFLAGS"
+  #AC_SUBST(EVINCE_HWP_CFLAGS)
+  #AC_SUBST(EVINCE_HWP_LIBS)
+else
+  PKG_CHECK_MODULES(EVINCE_HWP, [ghwp-0.2 evince-document-3.0])
+fi
 
 AC_SUBST([backenddir], "/usr/lib/evince/4/backends")
 

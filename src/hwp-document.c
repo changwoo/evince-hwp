@@ -43,23 +43,18 @@ struct _HWPDocumentClass
     EvDocumentClass parent_class;
 };
 
-/* TODO selection, find, print
-static void hwp_document_print_iface_init (EvDocumentPrintInterface *iface);
-static void hwp_document_find_iface_init  (EvDocumentFindInterface  *iface);
+/* TODO selection, find */
+
+/*static void hwp_document_find_iface_init  (EvDocumentFindInterface  *iface);*/
 static void hwp_selection_iface_init      (EvSelectionInterface     *iface);
 
 EV_BACKEND_REGISTER_WITH_CODE (HWPDocument, hwp_document,
     {
-        EV_BACKEND_IMPLEMENT_INTERFACE (EV_TYPE_DOCUMENT_PRINT,
-                                        hwp_document_print_iface_init);
-        EV_BACKEND_IMPLEMENT_INTERFACE (EV_TYPE_DOCUMENT_FIND,
-                                        hwp_document_find_iface_init);
+/*        EV_BACKEND_IMPLEMENT_INTERFACE (EV_TYPE_DOCUMENT_FIND,*/
+/*                                        hwp_document_find_iface_init);*/
         EV_BACKEND_IMPLEMENT_INTERFACE (EV_TYPE_SELECTION,
                                         hwp_selection_iface_init);
     });
-*/
-
-EV_BACKEND_REGISTER (HWPDocument, hwp_document)
 
 static void
 hwp_document_init (HWPDocument *hwp_document)
@@ -225,7 +220,7 @@ hwp_document_class_init (HWPDocumentClass *klass)
     /* hwp summary infomation */
     ev_document_class->get_info      = hwp_document_get_info;
 }
-/* TODO selection, find, print
+
 static void
 hwp_selection_render_selection (EvSelection      *selection,
                                 EvRenderContext  *rc,
@@ -291,69 +286,26 @@ hwp_selection_get_selected_text (EvSelection     *selection,
 }
 
 static cairo_region_t *
-create_region_from_ghwp_region (GList *region, gdouble scale)
-{
-    GList *l;
-    cairo_region_t *retval;
-
-    retval = cairo_region_create ();
-
-    for (l = region; l; l = g_list_next (l)) {
-        GHWPRectangle        *rectangle;
-        cairo_rectangle_int_t rect;
-
-        rectangle = (GHWPRectangle *)l->data;
-
-        rect.x = (gint) ((rectangle->x1 * scale) + 0.5);
-        rect.y = (gint) ((rectangle->y1 * scale) + 0.5);
-        rect.width  = (gint) (((rectangle->x2 - rectangle->x1) * scale) + 0.5);
-        rect.height = (gint) (((rectangle->y2 - rectangle->y1) * scale) + 0.5);
-        cairo_region_union_rectangle (retval, &rect);
-
-        ghwp_rectangle_free (rectangle);
-    }
-
-    return retval;
-}
-
-static cairo_region_t *
 hwp_selection_get_selection_region (EvSelection     *selection,
                                     EvRenderContext *rc,
                                     EvSelectionStyle style,
                                     EvRectangle     *points)
 {
-    GHWPPage       *ghwp_page;
-    cairo_region_t *retval;
-    GList          *region;
-
-    ghwp_page = GHWP_PAGE (rc->page->backend_page);
-    region = ghwp_page_get_selection_region (ghwp_page,
-                                             1.0,
-                                             (GHWPSelectionStyle) style,
-                                             (GHWPRectangle *) points);
-    retval = create_region_from_ghwp_region (region, rc->scale);
-    g_list_free (region);
-
-    return retval;
+    return ghwp_page_get_selection_region (GHWP_PAGE (rc->page->backend_page),
+                                           1.0,
+                                           (GHWPSelectionStyle) style,
+                                           (GHWPRectangle *) points);
 }
 
-static void
-hwp_selection_iface_init (EvSelectionInterface *iface)
+static void hwp_selection_iface_init (EvSelectionInterface *iface)
 {
     iface->render_selection     = hwp_selection_render_selection;
     iface->get_selected_text    = hwp_selection_get_selected_text;
     iface->get_selection_region = hwp_selection_get_selection_region;
 }
 
-static void
-hwp_document_print_iface_init (EvDocumentPrintInterface *iface)
+/*static void
+hwp_document_find_iface_init (EvDocumentFindInterface *iface)
 {
 
-}
-
-static void
-hwp_document_find_iface_init  (EvDocumentFindInterface  *iface)
-{
-
-}
-*/
+}*/
